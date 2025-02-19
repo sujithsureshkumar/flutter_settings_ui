@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_settings_ui/flutter_settings_ui.dart';
 
-class IOSSettingsTile extends StatefulWidget {
+class IOSSettingsTile<T> extends StatefulWidget {
   const IOSSettingsTile({
     required this.tileType,
     required this.leading,
@@ -17,6 +17,10 @@ class IOSSettingsTile extends StatefulWidget {
     required this.trailing,
     required this.descriptionInline,
     required this.backgroundColor,
+    required this.itemBuilderForPopupMenu,
+    required this.childForPopupMenu,
+    required this.initialValueForPopupMenu,
+    required this.onSelectedForPopupMenu,
     Key? key,
   }) : super(key: key);
 
@@ -34,11 +38,16 @@ class IOSSettingsTile extends StatefulWidget {
   final bool descriptionInline;
   final Color? backgroundColor;
 
+  final List<PopupMenuEntry<T>> Function(BuildContext)? itemBuilderForPopupMenu;
+  final Widget? childForPopupMenu;
+  final T? initialValueForPopupMenu;
+  final void Function(dynamic value)? onSelectedForPopupMenu;
+
   @override
   IOSSettingsTileState createState() => IOSSettingsTileState();
 }
 
-class IOSSettingsTileState extends State<IOSSettingsTile> {
+class IOSSettingsTileState<T> extends State<IOSSettingsTile<T>> {
   bool isPressed = false;
 
   @override
@@ -162,6 +171,13 @@ class IOSSettingsTileState extends State<IOSSettingsTile> {
                 size: 18 * scaleFactor,
               ),
             ),
+          ),
+        if (widget.tileType == SettingsTileType.popupTile)
+          PopupMenuButton<T>(
+            initialValue: widget.initialValueForPopupMenu,
+            onSelected: widget.onSelectedForPopupMenu,
+            itemBuilder: widget.itemBuilderForPopupMenu!,
+            child: widget.childForPopupMenu,
           ),
       ],
     );

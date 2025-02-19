@@ -6,9 +6,9 @@ import 'package:flutter_settings_ui/src/tiles/platforms/web_settings_tile.dart';
 import 'package:flutter_settings_ui/src/utils/platform_utils.dart';
 import 'package:flutter_settings_ui/src/utils/settings_theme.dart';
 
-enum SettingsTileType { simpleTile, switchTile, navigationTile }
+enum SettingsTileType { simpleTile, switchTile, navigationTile, popupTile }
 
-class SettingsTile extends AbstractSettingsTile {
+class SettingsTile<T> extends AbstractSettingsTile {
   SettingsTile({
     this.leading,
     this.trailing,
@@ -25,6 +25,10 @@ class SettingsTile extends AbstractSettingsTile {
     initialValue = null;
     activeSwitchColor = null;
     tileType = SettingsTileType.simpleTile;
+    initialValueForPopupMenu = null;
+    itemBuilderForPopupMenu = null;
+    onSelectedForPopupMenu = null;
+    childForPopupMenu = null;
   }
 
   SettingsTile.navigation({
@@ -43,6 +47,10 @@ class SettingsTile extends AbstractSettingsTile {
     initialValue = null;
     activeSwitchColor = null;
     tileType = SettingsTileType.navigationTile;
+    initialValueForPopupMenu = null;
+    itemBuilderForPopupMenu = null;
+    onSelectedForPopupMenu = null;
+    childForPopupMenu = null;
   }
 
   SettingsTile.switchTile({
@@ -61,13 +69,39 @@ class SettingsTile extends AbstractSettingsTile {
   }) : super(key: key) {
     value = null;
     tileType = SettingsTileType.switchTile;
+    initialValueForPopupMenu = null;
+    itemBuilderForPopupMenu = null;
+    onSelectedForPopupMenu = null;
+    childForPopupMenu = null;
+  }
+
+  SettingsTile.popUpTile({
+    required this.initialValueForPopupMenu,
+    required this.itemBuilderForPopupMenu,
+    required this.onSelectedForPopupMenu,
+    required this.childForPopupMenu,
+    this.descriptionInlineIos = false,
+    this.leading,
+    required this.title,
+    this.description,
+    this.enabled = true,
+    this.backgroundColor,
+    Key? key,
+  }) : super(key: key) {
+    value = null;
+    tileType = SettingsTileType.popupTile;
+    initialValue = null;
+    onToggle = null;
+    onPressed = null;
+    trailing = null;
+    activeSwitchColor = null;
   }
 
   /// The widget at the beginning of the tile
   final Widget? leading;
 
   /// The Widget at the end of the tile
-  final Widget? trailing;
+  late final Widget? trailing;
 
   /// The widget at the center of the tile
   final Widget title;
@@ -80,7 +114,7 @@ class SettingsTile extends AbstractSettingsTile {
   final Color? backgroundColor;
 
   /// A function that is called by tap on a tile
-  final Function(BuildContext context)? onPressed;
+  late final Function(BuildContext context)? onPressed;
 
   late final Color? activeSwitchColor;
   late final Widget? value;
@@ -88,6 +122,12 @@ class SettingsTile extends AbstractSettingsTile {
   late final SettingsTileType tileType;
   late final bool? initialValue;
   late final bool enabled;
+
+  late final List<PopupMenuEntry<T>> Function(BuildContext)?
+      itemBuilderForPopupMenu;
+  late final Widget? childForPopupMenu;
+  late final T? initialValueForPopupMenu;
+  late final void Function(dynamic)? onSelectedForPopupMenu;
 
   @override
   Widget build(BuildContext context) {
@@ -128,6 +168,10 @@ class SettingsTile extends AbstractSettingsTile {
           activeSwitchColor: activeSwitchColor,
           initialValue: initialValue ?? false,
           backgroundColor: backgroundColor,
+          initialValueForPopupMenu: initialValueForPopupMenu,
+          itemBuilderForPopupMenu: itemBuilderForPopupMenu,
+          onSelectedForPopupMenu: onSelectedForPopupMenu,
+          childForPopupMenu: childForPopupMenu,
         );
       case DevicePlatform.web:
         return WebSettingsTile(
